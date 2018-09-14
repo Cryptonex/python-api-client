@@ -49,7 +49,7 @@ class CryptonexAPI(object):
             return False
 
         if response.status_code != requests.codes.ok:
-            #print('Error code:', response.status_code)
+            # print('Error code:', response.status_code)
             return False
         # print(response.json())
         if "error" in response.json().keys():
@@ -201,15 +201,12 @@ class CryptonexAPI(object):
 
         return res["result"]
 
-    def miningCreate(self, amount, hold=None, description=None):
+    def miningCreate(self, amount, hold=False, description=''):
         add_params = {"amount": str(amount),
-                      "hold": False}
+                      "hold": False, "description" : description}
 
-        if hold is not None:
+        if hold is True:
             add_params["hold"] = True
-
-        if description is not None:
-            add_params["description"] = str(description)
 
         res = self.__call_api(method='mining.create', add_params=add_params)
 
@@ -265,10 +262,10 @@ class CryptonexAPI(object):
 
         return res["result"]
 
-    def invoiceList(self, is_executor=None):
+    def invoiceList(self, is_executor=False):
         add_params = {"is_executor": False}
 
-        if is_executor is not None:
+        if is_executor is True:
             add_params["is_executor"] = True
 
         res = self.__call_api(method="invoice.list", add_params=add_params)
@@ -287,3 +284,4 @@ class CryptonexAPI(object):
             return False
 
         return res["result"]
+

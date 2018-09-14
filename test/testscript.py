@@ -10,7 +10,7 @@ success_answer = {'balance', 'currency', 'hash', 'type'}
 res = obj.userAccountList()
 
 if  not res:
-	print('Test userAccountList...OK')
+	print('Test userAccountList...Error')
 elif res[0].keys() == success_answer:
 	print('Test userAccountList...OK')
 else:
@@ -24,7 +24,7 @@ to_currency = 'btc'
 res = obj.currencyConvert(amount, from_currency, to_currency)
 
 if  not res:
-	print('Test currencyConvert...OK')
+	print('Test currencyConvert...Error')
 elif res.keys() == success_answer:
 	print('Test currencyConvert...OK')
 else:
@@ -36,7 +36,7 @@ amount = 0.0005
 res = obj.accountWithdraw(FROM_HASH, TO_HASH, amount)
 
 if  not res:
-	print('Test accountWithdraw...OK')
+	print('Test accountWithdraw...Error')
 elif res.keys() == success_answer:
 	print('Test accountWithdraw...OK')
 else:
@@ -48,7 +48,7 @@ max_count = 3
 res = obj.transactionsList(max_count)
 
 if  not res:
-	print('Test transactionsList...OK')
+	print('Test transactionsList...Error')
 elif res.keys() == success_answer:
 	print('Test transactionsList...OK')
 else:
@@ -59,7 +59,7 @@ success_answer = {'alias', 'ask', 'base_currency', 'base_type', 'bid', 'convert_
 res = obj.rateList()
 
 if  not res:
-	print('Test rateList...OK')
+	print('Test rateList...Error')
 elif res[0].keys() == success_answer:
 	print('Test rateList...OK')
 else:
@@ -71,7 +71,7 @@ max_count = 3
 res = obj.couponList(max_count)
 
 if  not res:
-	print('Test couponList...OK')
+	print('Test couponList...Error')
 elif res.keys() == success_answer:
 	print('Test couponList...OK')
 else:
@@ -84,7 +84,7 @@ currency = 'cnx'
 res = obj.couponApply(amount, COUPON, currency)
 
 if  not res:
-	print('Test couponApply...OK')
+	print('Test couponApply...Error')
 elif res.keys() == success_answer:
 	print('Test couponApply...OK')
 else:
@@ -98,7 +98,7 @@ currency = 'cnx'
 res = obj.couponCreate(amount, currency)
 
 if  not res:
-	print('Test couponCreate...OK')
+	print('Test couponCreate...Error')
 elif res.keys() == success_answer:
 	print('Test couponCreate...OK')
 else:
@@ -109,7 +109,7 @@ success_answer = {'amount', 'comment', 'coupon', 'creator', 'currency', 'expire_
 res = obj.couponRedeem(COUPON)
 
 if  not res:
-	print('Test couponRedeem...OK')
+	print('Test couponRedeem...Error')
 elif res.keys() == success_answer:
 	print('Test couponRedeem...OK')
 else:
@@ -120,7 +120,7 @@ success_answer = {'amount', 'comment', 'coupon', 'creator', 'currency', 'expire_
 res = obj.couponCheck(COUPON)
 
 if  not res:
-	print('Test couponCheck...OK')
+	print('Test couponCheck...Error')
 elif res.keys() == success_answer:
 	print('Test couponCheck...OK')
 else:
@@ -132,7 +132,7 @@ max_count = 3
 res = obj.miningList(max_count)
 
 if  not res:
-	print('Test miningList...OK')
+	print('Test miningList...Error')
 elif res.keys() == success_answer:
 	print('Test miningList...OK')
 else:
@@ -144,7 +144,7 @@ amount = 2
 res = obj.miningCreate(amount)
 
 if  not res:
-	print('Test miningCreate...OK')
+	print('Test miningCreate...Error')
 elif res.keys() == success_answer:
 	print('Test miningCreate...OK')
 else:
@@ -155,7 +155,7 @@ success_answer = {'auth_2fa', 'deposit_auto_convert', 'deposit_auto_mining', 'et
 res = obj.userInfo()
 
 if  not res:
-	print('Test userInfo...OK')
+	print('Test userInfo...Error')
 elif res.keys() == success_answer:
 	print('Test userInfo...OK')
 else:
@@ -166,7 +166,7 @@ success_answer = {'amount', 'creator', 'currency', 'description', 'expire_at', '
 res = obj.invoiceCancel(UUID)
 
 if  not res:
-	print('Test invoiceCancel...OK')
+	print('Test invoiceCancel...Error')
 elif res.keys() == success_answer:
 	print('Test invoiceCancel...OK')
 else:
@@ -177,7 +177,7 @@ success_answer = {'amount', 'creator', 'currency', 'description', 'executor', 'e
 res = obj.invoiceApply(UUID)
 
 if  not res:
-	print('Test invoiceApply...OK')
+	print('Test invoiceApply...Error')
 elif res.keys() == success_answer:
 	print('Test invoiceApply...OK')
 else:
@@ -190,7 +190,7 @@ currency = 'cnx'
 res = obj.invoiceCreate(amount, currency)
 
 if  not res:
-	print('Test invoiceCreate...OK')
+	print('Test invoiceCreate...Error')
 elif res.keys() == success_answer:
 	print('Test invoiceCreate...OK')
 else:
@@ -201,7 +201,7 @@ success_answer = {'invoices', 'summary'}
 res = obj.invoiceList()
 
 if  not res:
-	print('Test invoiceList...OK')
+	print('Test invoiceList...Error')
 elif res.keys() == success_answer:
 	print('Test invoiceList...OK')
 else:
@@ -212,7 +212,7 @@ success_answer = {'amount', 'creator', 'currency', 'description', 'expire_at', '
 res = obj.invoiceGet(UUID)
 
 if  not res:
-	print('Test invoiceGet...OK')
+	print('Test invoiceGet...Error')
 elif res.keys() == success_answer:
 	print('Test invoiceGet...OK')
 else:
