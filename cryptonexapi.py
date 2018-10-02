@@ -4,6 +4,26 @@ import requests
 import json
 
 
+class CryptonexException(Exception):
+
+    def __init__(self, msg):
+        super().__init__(msg)
+
+
+class CryptonexHTTPException(CryptonexException):
+
+    def __init__(self, msg, codehttp):
+        super().__init__(msg)
+        self.code = codehttp
+
+
+class CryptonexRPCException(CryptonexException):
+
+    def __init__(self, msg, codejsonrpc):
+        super().__init__(msg)
+        self.code = codejsonrpc
+
+
 class CryptonexAPI(object):
 
     def setUrl(self, url):
@@ -13,20 +33,22 @@ class CryptonexAPI(object):
         self._headers = headers
 
     def setNonce(self, nonce):
-        self.nonce = nonce
+        self._nonce = nonce
 
     def __init__(self, key, secret_key, is_test=False):
         self._key = key
         self._secret_key = secret_key
         if is_test:
-        	self._url = 'https://test-userapi.cryptonex.org/api'
+            self._url = 'https://demo-userapi.cryptonex.org/api'
         else:
-        	self._url = 'https://userapi.cryptonex.org/api'
+            self._url = 'https://userapi.cryptonex.org/api'
         self._headers = {'content-type': 'application/json'}
+        self.__id = 0
         self._nonce = int(time.time())
 
     def __call_api(self, method, add_params=None):
         params = {}
+        self.__id += 1
         self._nonce += 1
         sign = hashlib.sha256(method.encode(
             'utf-8') + str(self._nonce).encode('utf-8') + self._secret_key.encode('utf-8'))
@@ -37,23 +59,30 @@ class CryptonexAPI(object):
         if add_params is not None:
             params.update(add_params)
 
-        payload = {"jsonrps": "2.0", "method": method,
-                   "params": params, "id": 1}
+        payload = {"jsonrpc": "2.0", "method": method,
+                   "params": params, "id": self.__id}
         response = None
 
         try:
             response = requests.post(self._url, data=json.dumps(
                 payload), headers=self._headers)
         except Exception:
-            # print('Error connection')
-            return False
+            raise CryptonexException('Check the network connection')
 
         if response.status_code != requests.codes.ok:
-            # print('Error code:', response.status_code)
-            return False
+            raise CryptonexHTTPException(
+                'HTTP Error code', response.status_code)
+
         # print(response.json())
         if "error" in response.json().keys():
-            return False
+            err = response.json()["error"]
+            raise CryptonexRPCException(
+                err["message"], err["code"])
+
+        if "result" not in response.json().keys():
+            raise CryptonexRPCException(
+                "Answer does not have result key", -33001)
+
         return response.json()
 
     def userAccountList(self, max_count=None):
@@ -65,9 +94,6 @@ class CryptonexAPI(object):
         res = self.__call_api(method="user.account_list",
                               add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]["accounts"]
 
     def currencyConvert(self, amount, from_currency, to_currency):
@@ -75,9 +101,6 @@ class CryptonexAPI(object):
             amount), "from_currency": from_currency, "to_currency": to_currency}
 
         res = self.__call_api(method="currency.convert", add_params=add_params)
-
-        if not res:
-            return False
 
         return res["result"]
 
@@ -89,9 +112,6 @@ class CryptonexAPI(object):
             add_params["auth_2fa_code"] = auth_2fa_code
 
         res = self.__call_api(method="account.withdraw", add_params=add_params)
-
-        if not res:
-            return False
 
         return res["result"]
 
@@ -106,16 +126,10 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method="transaction.list", add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def rateList(self):
         res = self.__call_api(method="currency_pair.get_rate_list")
-
-        if not res:
-            return False
 
         return res["result"]["rates"]
 
@@ -130,9 +144,6 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method="coupon.list", add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def couponApply(self, amount, coupon, currency):
@@ -140,9 +151,6 @@ class CryptonexAPI(object):
             amount), "coupon": coupon, "currency": currency}
 
         res = self.__call_api(method="coupon.apply", add_params=add_params)
-
-        if not res:
-            return False
 
         return res["result"]
 
@@ -160,9 +168,6 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method="coupon.create", add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def couponRedeem(self, coupon, password=None):
@@ -173,18 +178,12 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method="coupon.redeem", add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def couponCheck(self, coupon):
         add_params = {"coupon": coupon}
 
         res = self.__call_api(method="coupon.check", add_params=add_params)
-
-        if not res:
-            return False
 
         return res["result"]
 
@@ -196,30 +195,21 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method='mining.list', add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def miningCreate(self, amount, hold=False, description=''):
         add_params = {"amount": str(amount),
-                      "hold": False, "description" : description}
+                      "hold": False, "description": description}
 
         if hold is True:
             add_params["hold"] = True
 
         res = self.__call_api(method='mining.create', add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def userInfo(self):
         res = self.__call_api(method="user.info")
-
-        if not res:
-            return False
 
         return res["result"]
 
@@ -228,18 +218,12 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method="invoice.cancel", add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def invoiceApply(self, uuid):
         add_params = {"uuid": str(uuid)}
 
         res = self.__call_api(method="invoice.apply", add_params=add_params)
-
-        if not res:
-            return False
 
         return res["result"]
 
@@ -257,9 +241,6 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method="invoice.create", add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def invoiceList(self, is_executor=False):
@@ -270,9 +251,6 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method="invoice.list", add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
 
     def invoiceGet(self, uuid):
@@ -280,8 +258,4 @@ class CryptonexAPI(object):
 
         res = self.__call_api(method="invoice.get", add_params=add_params)
 
-        if not res:
-            return False
-
         return res["result"]
-
